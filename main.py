@@ -11,6 +11,8 @@ def connect_db(in_host, in_user, in_passwd, in_db):
 
     return mydb
 
+def create_db(name, cursor):
+    cursor.execute("CREATE DATABASE "+name)
 
 def read_process_json(file):
     with open(file, 'r') as f:
@@ -91,15 +93,42 @@ def read_process_json(file):
     table = pd.DataFrame.from_dict(table_dict)
     return table
 
+def read_cnv(file):
+    table = pd.read_csv(file, sep='\t')
+    return table
+
+def insert_data_in_db(connection, cursor, db_name, table_name, dict_col_type, pd_df):
+    #create table
+    string_col_type = table_name + '('
+    for key in dict_col_type.keys():
+        string_col_type = string_col_type + key + ' ' + dict_col_type[key] +', '
+
+    string_col_type=string_col_type[:-2]
+    string_col_type += ')'
+
+    cursor.execute("CREATE TABLE " + string_col_type)
+
+    formula = '(' + ('%s,' * pd_df.shape[1])
+    formula = formula[:-1] + ')'
+    for i, row in pd_df.iterrows():
+        # here %S means string values
+        sql = "INSERT INTO " + str(db_name) + '.' + str(table_name) + " VALUES " + formula
+        mycursor.execute(sql, tuple(row))
+        # print("Record inserted")
+        # the connection is not auto committed by default, so we must commit to save our changes
+        connection.commit()
+        # print(i)
+
+
+
+
 if __name__ == '__main__':
 
-    mydb = connect_db('localhost', 'root', 'kuznechik', 'testdb')
+    mydb = connect_db('localhost', 'root', 'kuznechik', 'Vivan')
     mycursor = mydb.cursor()
 
-    # create_db(mycursor, 'testdb')
 
-    # mycursor.execute("CREATE DATABASE testdb")
-
+    # create_db('Vivan', mycursor)
 
     # mycursor.execute("SHOW DATABASES")
     #
@@ -107,22 +136,29 @@ if __name__ == '__main__':
     #     print(db)
 
 
-    # mycursor.execute("CREATE TABLE students (name VARCHAR(255), age INTEGER(10))")
 
-
-    # mycursor.execute("SHOW TABLES")
-    # for tb in mycursor:
-    #     print(tb)
-
-
-    # sqlFormula = 'INSERT INTO students (name, age) VALUES (%s, %s)'
+    # dict_col_type_json = {'patID': 'VARCHAR(255)', 'upHsgene': 'VARCHAR(255)',\
+    # 'upDmgene': 'VARCHAR(255)', 'upDELDUPL': 'VARCHAR(255)', 'upConfidence': 'VARCHAR(255)', \
+    # 'upComments': 'VARCHAR(255)', 'downHsgene': 'VARCHAR(255)', 'downDmgene': 'VARCHAR(255)', \
+    # 'downDELDUPL': 'VARCHAR(255)', 'downConfidence': 'VARCHAR(255)', 'downComments': 'VARCHAR(255)'}
     #
-    # student1 = ("Rachel", 8)
-    # mycursor.execute(sqlFormula, student1)
-    # mydb.commit()
+    # insert_data_in_db(mydb, mycursor, 'Vivan', 'benchling', dict_col_type_json , read_process_json('../Downloads/Vivan/input_files/benchling_entries.json'))
 
 
-    table = read_process_json('../Downloads/Vivan/input_files/benchling_entries.json')
+    dict_col_type_cnv = {'seqnames': 'VARCHAR(255)' , 'start': 'INTEGER(10)',\
+       'end': 'INTEGER(10)', 'width': 'INTEGER(10)', 'type_alternation': 'VARCHAR(255)', \
+       'copy_ratio': 'NUMERIC(10,6)', 'log_copy_ratio': 'NUMERIC(10,6)', \
+       'copy_number': 'INTEGER(10)', 'length': 'INTEGER(10)', 'file_name': 'VARCHAR(255)', \
+       'pipeline_name': 'VARCHAR(255)', 'flank_geneIds': 'INTEGER(10)', \
+       'symbol': 'VARCHAR(255)', 'list_predicting_tools': 'VARCHAR(255)',\
+       'number_predicting_tools': 'INTEGER(10)', 'oncoKB_classification': 'VARCHAR(255)',\
+       'oncoKB_classification_binary': 'INTEGER(10)', 'Patient_ID': 'VARCHAR(255)'}
 
-    print(table)
+    insert_data_in_db(mydb, mycursor, 'Vivan', 'copies', dict_col_type_cnv,\
+    read_cnv('../Downloads/Vivan/input_files/cnv_processed_nan_processed.txt'))
+
+
+
+
+
 
