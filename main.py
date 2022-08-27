@@ -117,7 +117,33 @@ def insert_data_in_db(connection, cursor, db_name, table_name, dict_col_type, pd
         # print("Record inserted")
         # the connection is not auto committed by default, so we must commit to save our changes
         connection.commit()
-        # print(i)
+        if i % 10000 == 0 :
+            print(i)
+
+
+def test_insert_data_in_db(connection, cursor, db_name, table_name, dict_col_type, pd_df):
+    #create table
+    string_col_type = table_name + '('
+    for key in dict_col_type.keys():
+        string_col_type = string_col_type + key + ' ' + dict_col_type[key] +', '
+
+    string_col_type=string_col_type[:-2]
+    string_col_type += ')'
+
+    cursor.execute("CREATE TABLE " + string_col_type)
+
+    formula = '(' + ('%s,' * pd_df.shape[1])
+    formula = formula[:-1] + ')'
+
+    list_rows = []
+    for i, row in pd_df.iterrows():
+        list_rows.append(tuple(row))
+    print(len(list_rows))
+    sql = "INSERT INTO " + str(db_name) + '.' + str(table_name) + " VALUES " + formula
+
+    cursor.executemany(sql, list_rows)
+    connection.commit()
+
 
 
 
@@ -150,12 +176,13 @@ if __name__ == '__main__':
        'copy_ratio': 'NUMERIC(10,6)', 'log_copy_ratio': 'NUMERIC(10,6)', \
        'copy_number': 'INTEGER(10)', 'length': 'INTEGER(10)', 'file_name': 'VARCHAR(255)', \
        'pipeline_name': 'VARCHAR(255)', 'flank_geneIds': 'INTEGER(10)', \
-       'symbol': 'VARCHAR(255)', 'list_predicting_tools': 'VARCHAR(255)',\
+       'symbol': 'VARCHAR(255)', 'list_predicting_tools': 'TEXT',\
        'number_predicting_tools': 'INTEGER(10)', 'oncoKB_classification': 'VARCHAR(255)',\
        'oncoKB_classification_binary': 'INTEGER(10)', 'Patient_ID': 'VARCHAR(255)'}
 
-    insert_data_in_db(mydb, mycursor, 'Vivan', 'copies', dict_col_type_cnv,\
+    test_insert_data_in_db(mydb, mycursor, 'Vivan', 'copies', dict_col_type_cnv,\
     read_cnv('../Downloads/Vivan/input_files/cnv_processed_nan_processed.txt'))
+
 
 
 
