@@ -240,20 +240,20 @@ if __name__ == '__main__':
 
 
 
-    table_up, table_down = read_process_json('../Downloads/Vivan/input_files/benchling_entries.json')
-
-    dict_col_type_up = {'patID': 'VARCHAR(255)', 'upHsgene': 'VARCHAR(255)',\
-    'upDmgene': 'VARCHAR(255)', 'upDELDUPL': 'VARCHAR(255)', 'upConfidence': 'VARCHAR(255)', \
-    'upComments': 'VARCHAR(255)'}
-
-    dict_col_type_down  = {'patID': 'VARCHAR(255)',  'downHsgene': 'VARCHAR(255)', 'downDmgene': 'VARCHAR(255)', \
-    'downDELDUPL': 'VARCHAR(255)', 'downConfidence': 'VARCHAR(255)', 'downComments': 'VARCHAR(255)'}
-
-    fast_insert_data_in_db(mydb, mycursor, 'Vivan', 'upGenes', dict_col_type_up,\
-    table_up)
-
-    fast_insert_data_in_db(mydb, mycursor, 'Vivan', 'downGenes', dict_col_type_down, \
-                           table_down)
+    # table_up, table_down = read_process_json('../Downloads/Vivan/input_files/benchling_entries.json')
+    #
+    # dict_col_type_up = {'patID': 'VARCHAR(255)', 'upHsgene': 'VARCHAR(255)',\
+    # 'upDmgene': 'VARCHAR(255)', 'upDELDUPL': 'VARCHAR(255)', 'upConfidence': 'VARCHAR(255)', \
+    # 'upComments': 'VARCHAR(255)'}
+    #
+    # dict_col_type_down  = {'patID': 'VARCHAR(255)',  'downHsgene': 'VARCHAR(255)', 'downDmgene': 'VARCHAR(255)', \
+    # 'downDELDUPL': 'VARCHAR(255)', 'downConfidence': 'VARCHAR(255)', 'downComments': 'VARCHAR(255)'}
+    #
+    # fast_insert_data_in_db(mydb, mycursor, 'Vivan', 'upGenes', dict_col_type_up,\
+    # table_up)
+    #
+    # fast_insert_data_in_db(mydb, mycursor, 'Vivan', 'downGenes', dict_col_type_down, \
+    #                        table_down)
 
 
 
