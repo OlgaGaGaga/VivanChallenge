@@ -149,34 +149,9 @@ def read_process_json(file):
 
     return (new_table_up, new_table_down)
 
-
 def read_cnv(file):
     table = pd.read_csv(file, sep='\t')
     return table
-
-def insert_data_in_db(connection, cursor, db_name, table_name, dict_col_type, pd_df):
-    #create table
-    string_col_type = table_name + '('
-    for key in dict_col_type.keys():
-        string_col_type = string_col_type + key + ' ' + dict_col_type[key] +', '
-
-    string_col_type=string_col_type[:-2]
-    string_col_type += ')'
-
-    cursor.execute("CREATE TABLE " + string_col_type)
-
-    formula = '(' + ('%s,' * pd_df.shape[1])
-    formula = formula[:-1] + ')'
-    for i, row in pd_df.iterrows():
-        # here %S means string values
-        sql = "INSERT INTO " + str(db_name) + '.' + str(table_name) + " VALUES " + formula
-        mycursor.execute(sql, tuple(row))
-        # print("Record inserted")
-        # the connection is not auto committed by default, so we must commit to save our changes
-        connection.commit()
-        if i % 10000 == 0 :
-            print(i)
-
 
 def fast_insert_data_in_db(connection, cursor, db_name, table_name, dict_col_type, pd_df):
     #create table
@@ -202,10 +177,9 @@ def fast_insert_data_in_db(connection, cursor, db_name, table_name, dict_col_typ
     connection.commit()
 
 
-
 if __name__ == '__main__':
 
-    mydb = connect_db('localhost', 'root', 'kuznechik', 'Vivan')
+    mydb = connect_db('localhost', 'root', 'password', 'Vivan')
     mycursor = mydb.cursor()
 
 
@@ -254,6 +228,8 @@ if __name__ == '__main__':
     #
     # fast_insert_data_in_db(mydb, mycursor, 'Vivan', 'downGenes', dict_col_type_down, \
     #                        table_down)
+
+    #
 
 
 
