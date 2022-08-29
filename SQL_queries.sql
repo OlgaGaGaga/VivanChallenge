@@ -41,7 +41,7 @@ WHERE symbol = 'NOSYMBOL' ;
 
 
 
--- a) Number of patients in Benchling with information for genes to up/down regulate
+-- a) Number of patients in Benchling with information for genes to up/down regulate
 
 SELECT COUNT(*)
 FROM(
@@ -51,7 +51,7 @@ FROM(
 
 # OUTPUT : 10
 
--- b) Number of patients with information for copy number variation 
+-- b) Number of patients with information for copy number variation 
 
 SELECT COUNT(*)
 FROM (
@@ -75,7 +75,7 @@ WHERE Patient_ID IN (
 
 # OUTPUT : Pat027, Pat007
 
--- d) For each patient found in “c” list the genes present in Benchling and having a copy number variation found with the tool “pipeline_name: sequenza_vivan”
+-- d) For each patient found in “c” list the genes present in Benchling and having a copy number variation found with the tool “pipeline_name: sequenza_vivan”
 
 SELECT wholetable.Patient_ID, wholetable.symbol
 FROM(
@@ -86,7 +86,6 @@ FROM (
 	WHERE pipeline_name LIKE '%sequenza_vivan%'
 ) AS pipeline
 WHERE Patient_ID IN (
-	# patients that are in benchling&copies
 	SELECT Patient_ID
 	FROM (
 		SELECT Patient_ID
@@ -125,7 +124,7 @@ WHERE Patient_ID IN (
 		GROUP BY Patient_ID) as groupedCopies
 	WHERE Patient_ID IN (
 		SELECT patID
-		FROM benchling
+		FROM downGenes
 	)
 ) AND symbol IN (
 	SELECT downHsgene
